@@ -37,9 +37,6 @@ _4A2AAudioProcessor::_4A2AAudioProcessor()
                juce::ParameterID{"makeUp", 1}, "makeUp", -12.0f, 12.0f,
                0.0f)})
 {
-    //    addParameter(th = new
-    //    juce::AudioParameterFloat(juce::ParameterID{"th", 1}, "threshold",
-    //    -60.0f, 0.0f, -30.0f));
 }
 
 _4A2AAudioProcessor::~_4A2AAudioProcessor() {}
@@ -146,13 +143,16 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     auto totalNumSamples = buffer.getNumSamples();
 
-    auto thValue = paramState.getParameter("th")->getValue() * 60 - 60;
-    auto ratioValue = paramState.getParameter("ratio")->getValue() * 19 + 1;
+    auto thValue = paramState.getParameter("th")->convertFrom0to1(
+        paramState.getParameter("th")->getValue());
+    auto ratioValue = paramState.getParameter("ratio")->convertFrom0to1(
+        paramState.getParameter("ratio")->getValue());
     auto atValue =
-        paramState.getParameter("at")->getValue() * (100 - 0.1) + 0.1;
+        paramState.getParameter("at")->convertFrom0to1(paramState.getParameter("at")->getValue());
     auto rtValue =
-        paramState.getParameter("rt")->getValue() * (1000 - 100) + 100;
-    auto makeUpValue = paramState.getParameter("makeUp")->getValue() * 24 - 12;
+        paramState.getParameter("rt")->convertFrom0to1(paramState.getParameter("rt")->getValue());
+    auto makeUpValue = paramState.getParameter("makeUp")->convertFrom0to1(
+        paramState.getParameter("makeUp")->getValue());
 
     auto thGain = juce::Decibels::decibelsToGain(thValue);
     auto makeUpGain = juce::Decibels::decibelsToGain(makeUpValue);
@@ -163,8 +163,7 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, totalNumSamples);
 
-    int channel = 0;
-    auto *channelData = buffer.getWritePointer(channel);
+    auto *channelData = buffer.getWritePointer(0);
 
     std::inclusive_scan(
         channelData, channelData + totalNumSamples, gBuffer.begin(),
@@ -173,8 +172,7 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
             auto xAbs = abs(x);
             auto g = std::fmin(1.0f, std::pow(xAbs / thGain, -compSlope));
             auto coef = g < gPrev ? at : rt;
-            auto gNext = g * coef + gPrev * (1 - coef);
-            return gNext;
+            return g * coef + gPrev * (1 - coef);
         },
         gPrev);
     gPrev = gBuffer.back();
