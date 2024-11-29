@@ -1,3 +1,8 @@
 {
-    "makefile.makefilePath": "/Users/ycy/Documents/4a2a/4A2A/Builds/LinuxMakefile/Makefile"
+    "makefile.makefilePath": "/Users/ycy/Documents/4a2a/4A2A/Builds/LinuxMakefile/Makefile",
+    "C_Cpp.default.compilerPath": "/Library/Developer/CommandLineTools/usr/bin/clang",
+    "files.associations": {
+        "algorithm": "cpp",
+        "*.mm": "cpp"
+    }
 }
