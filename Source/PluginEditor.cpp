@@ -16,35 +16,23 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(500, 300);
+    setSize(400, 300);
 
     peakReduction.setRange(40, 100);
     peakReduction.setValue(40);
-    //    threshold.setRange(-60, 0);
-    //    threshold.setValue(-18);
-    //    ratio.setRange(1, 20);
-    //    ratio.setValue(1);
-    //    attackMs.setRange(0.1, 100);
-    //    attackMs.setValue(1);
-    //    releaseMs.setRange(100, 1000);
-    //    releaseMs.setValue(200);
-    //    makeUp.setRange(-12, 12);
-    //    makeUp.setValue(0);
-    //    peakReduction.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
-    peakReduction.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+
+    peakReduction.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                                   peakReduction.getTextBoxHeight());
-    threshold.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+    threshold.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                               threshold.getTextBoxHeight());
-    ratio.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+    ratio.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                           ratio.getTextBoxHeight());
-    attackMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+    attackMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                              attackMs.getTextBoxHeight());
-    releaseMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+    releaseMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                               releaseMs.getTextBoxHeight());
-    makeUp.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 160,
+    makeUp.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
                            makeUp.getTextBoxHeight());
-    //    peakReduction.setPopupDisplayEnabled(true, true, this);
-    //    peakReduction.setTextValueSuffix(" Peak Reduction");
 
     peakReductionLabel.setText("Peak Reduction", juce::dontSendNotification);
     peakReductionLabel.attachToComponent(&peakReduction, true);
@@ -149,7 +137,7 @@ std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue)
             break;
     }
     auto lower = upper - 1;
-    auto p = (peakValue - peakPoints[lower]) * 0.2;
+    auto p = (peakValue - peakPoints[lower]) / (peakPoints[upper] - peakPoints[lower]);
     std::array<float, 5> interpParam;
     std::transform(std::begin(paramPoints[upper]), std::end(paramPoints[upper]),
                    std::begin(paramPoints[lower]), interpParam.begin(),
