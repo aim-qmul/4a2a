@@ -60,6 +60,12 @@ private:
   float gPrev, sampleRate;
   std::vector<float> gBuffer;
 
+  std::atomic<float> *thParam = nullptr;
+  std::atomic<float> *ratioParam = nullptr;
+  std::atomic<float> *atParam = nullptr;
+  std::atomic<float> *rtParam = nullptr;
+  std::atomic<float> *makeUpParam = nullptr;
+
   float m2c(float m) { return 1.0f - std::exp(-2200.0f / m / sampleRate); }
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4A2AAudioProcessor)

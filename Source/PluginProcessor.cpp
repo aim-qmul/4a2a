@@ -37,6 +37,11 @@ _4A2AAudioProcessor::_4A2AAudioProcessor()
                juce::ParameterID{"makeUp", 1}, "makeUp", -12.0f, 12.0f,
                0.0f)})
 {
+    thParam = paramState.getRawParameterValue("th");
+    ratioParam = paramState.getRawParameterValue("ratio");
+    atParam = paramState.getRawParameterValue("at");
+    rtParam = paramState.getRawParameterValue("rt");
+    makeUpParam = paramState.getRawParameterValue("makeUp");
 }
 
 _4A2AAudioProcessor::~_4A2AAudioProcessor() {}
@@ -143,16 +148,11 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     auto totalNumSamples = buffer.getNumSamples();
 
-    auto thValue = paramState.getParameter("th")->convertFrom0to1(
-        paramState.getParameter("th")->getValue());
-    auto ratioValue = paramState.getParameter("ratio")->convertFrom0to1(
-        paramState.getParameter("ratio")->getValue());
-    auto atValue =
-        paramState.getParameter("at")->convertFrom0to1(paramState.getParameter("at")->getValue());
-    auto rtValue =
-        paramState.getParameter("rt")->convertFrom0to1(paramState.getParameter("rt")->getValue());
-    auto makeUpValue = paramState.getParameter("makeUp")->convertFrom0to1(
-        paramState.getParameter("makeUp")->getValue());
+    float thValue = *thParam;
+    float ratioValue = *ratioParam;
+    float atValue = *atParam;
+    float rtValue = *rtParam;
+    float makeUpValue = *makeUpParam;
 
     auto thGain = juce::Decibels::decibelsToGain(thValue);
     auto makeUpGain = juce::Decibels::decibelsToGain(makeUpValue);
@@ -198,6 +198,9 @@ void _4A2AAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    auto state = paramState.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void _4A2AAudioProcessor::setStateInformation(const void *data,
@@ -206,6 +209,9 @@ void _4A2AAudioProcessor::setStateInformation(const void *data,
     // You should use this method to restore your parameters from this memory
     // block, whose contents will have been created by the getStateInformation()
     // call.
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+    if (xml.get() != nullptr && xml->hasTagName(paramState.state.getType()))
+        paramState.replaceState(juce::ValueTree::fromXml(*xml));
 }
 
 //==============================================================================
