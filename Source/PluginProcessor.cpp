@@ -167,13 +167,12 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     gBuffer[0] = gBuffer.back();
     std::transform(channelData, channelData + totalNumSamples, gBuffer.begin() + 1,
-                   [](auto x)
-                   { return abs(x); });
+                   [&thGain, &compSlope](auto x)
+                   { return std::fmin(1.0f, std::pow(abs(x) / thGain, -compSlope)); });
     std::partial_sum(
         gBuffer.cbegin(), gBuffer.cend(), gBuffer.begin(),
-        [&thGain, &compSlope, &at, &rt](auto gPrev, auto xAbs)
+        [&at, &rt](auto gPrev, auto g)
         {
-            auto g = std::fmin(1.0f, std::pow(xAbs / thGain, -compSlope));
             auto coef = g < gPrev ? at : rt;
             return g * coef + gPrev * (1 - coef);
         });
