@@ -103,9 +103,9 @@ void _4A2AAudioProcessor::prepareToPlay(double sampleRate,
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    gPrev = 1;
     this->sampleRate = sampleRate;
-    gBuffer.resize(samplesPerBlock);
+    gBuffer.resize(samplesPerBlock + 1);
+    gBuffer[samplesPerBlock] = 1.0f;
 }
 
 void _4A2AAudioProcessor::releaseResources()
@@ -165,18 +165,19 @@ void _4A2AAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     auto *channelData = buffer.getWritePointer(0);
 
-    std::inclusive_scan(
-        channelData, channelData + totalNumSamples, gBuffer.begin(),
-        [&thGain, &compSlope, &at, &rt](auto gPrev, auto x)
+    gBuffer[0] = gBuffer.back();
+    std::transform(channelData, channelData + totalNumSamples, gBuffer.begin() + 1,
+                   [](auto x)
+                   { return abs(x); });
+    std::partial_sum(
+        gBuffer.cbegin(), gBuffer.cend(), gBuffer.begin(),
+        [&thGain, &compSlope, &at, &rt](auto gPrev, auto xAbs)
         {
-            auto xAbs = abs(x);
             auto g = std::fmin(1.0f, std::pow(xAbs / thGain, -compSlope));
             auto coef = g < gPrev ? at : rt;
             return g * coef + gPrev * (1 - coef);
-        },
-        gPrev);
-    gPrev = gBuffer.back();
-    std::transform(gBuffer.cbegin(), gBuffer.cend(), channelData, channelData,
+        });
+    std::transform(gBuffer.cbegin() + 1, gBuffer.cend(), channelData, channelData,
                    std::multiplies<>{});
     buffer.applyGain(makeUpGain);
 }

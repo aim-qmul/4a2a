@@ -57,7 +57,7 @@ public:
 
 private:
   juce::AudioProcessorValueTreeState paramState;
-  float gPrev, sampleRate;
+  float sampleRate;
   std::vector<float> gBuffer;
 
   std::atomic<float> *thParam = nullptr;
