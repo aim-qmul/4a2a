@@ -2,3 +2,4 @@ Builds/MacOSX/build
 *.DS_Store
 Builds/VisualStudio2022
 .vs
+.vscode
