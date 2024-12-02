@@ -11,7 +11,7 @@
 
 //==============================================================================
 _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
-	_4A2AAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
+	_4A2AAudioProcessor &p, juce::AudioProcessorValueTreeState &vts)
 	: AudioProcessorEditor(&p), audioProcessor(p), valueTreeState(vts)
 {
 	// Make sure that before the constructor has finished, you've set the
@@ -22,17 +22,17 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	peakReduction.setValue(40);
 
 	peakReduction.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		peakReduction.getTextBoxHeight());
+								  peakReduction.getTextBoxHeight());
 	threshold.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		threshold.getTextBoxHeight());
+							  threshold.getTextBoxHeight());
 	ratio.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		ratio.getTextBoxHeight());
+						  ratio.getTextBoxHeight());
 	attackMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		attackMs.getTextBoxHeight());
+							 attackMs.getTextBoxHeight());
 	releaseMs.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		releaseMs.getTextBoxHeight());
+							  releaseMs.getTextBoxHeight());
 	makeUp.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
-		makeUp.getTextBoxHeight());
+						   makeUp.getTextBoxHeight());
 
 	peakReductionLabel.setText("Peak Reduction", juce::dontSendNotification);
 	peakReductionLabel.attachToComponent(&peakReduction, true);
@@ -57,14 +57,14 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	makeUp.setTextValueSuffix(" dB");
 
 	peakReduction.onValueChange = [this]
-		{
-			auto params = interp(peakReduction.getValue());
-			threshold.setValue(params[0]);
-			ratio.setValue(params[1]);
-			attackMs.setValue(params[2]);
-			releaseMs.setValue(params[3]);
-			makeUp.setValue(params[4]);
-		};
+	{
+		auto params = interp(peakReduction.getValue());
+		threshold.setValue(params[0]);
+		ratio.setValue(params[1]);
+		attackMs.setValue(params[2]);
+		releaseMs.setValue(params[3]);
+		makeUp.setValue(params[4]);
+	};
 
 	addAndMakeVisible(&peakReduction);
 	addAndMakeVisible(&peakReductionLabel);
@@ -100,7 +100,7 @@ _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
 }
 
 //==============================================================================
-void _4A2AAudioProcessorEditor::paint(juce::Graphics& g)
+void _4A2AAudioProcessorEditor::paint(juce::Graphics &g)
 {
 	// fill the whole window white
 	//    g.fillAll (juce::Colours::white);
@@ -112,7 +112,7 @@ void _4A2AAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setFont(25.0f);
 
 	g.drawFittedText("4A-2A", 0, 0, getWidth(), 30,
-		juce::Justification::centred, 1);
+					 juce::Justification::centred, 1);
 }
 
 void _4A2AAudioProcessorEditor::resized()
@@ -140,8 +140,8 @@ std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue)
 	auto p = (peakValue - peakPoints[lower]) / (peakPoints[upper] - peakPoints[lower]);
 	std::array<float, 5> interpParam;
 	std::transform(std::begin(paramPoints[upper]), std::end(paramPoints[upper]),
-		std::begin(paramPoints[lower]), interpParam.begin(),
-		[&p](auto u, auto l)
-		{ return p * u + (1 - p) * l; });
+				   std::begin(paramPoints[lower]), interpParam.begin(),
+				   [&p](auto u, auto l)
+				   { return p * u + (1 - p) * l; });
 	return interpParam;
 }

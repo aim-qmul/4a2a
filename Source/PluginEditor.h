@@ -21,18 +21,18 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 class _4A2AAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-	_4A2AAudioProcessorEditor(_4A2AAudioProcessor&, juce::AudioProcessorValueTreeState&);
+	_4A2AAudioProcessorEditor(_4A2AAudioProcessor &, juce::AudioProcessorValueTreeState &);
 	~_4A2AAudioProcessorEditor() override;
 
 	//==============================================================================
-	void paint(juce::Graphics&) override;
+	void paint(juce::Graphics &) override;
 	void resized() override;
 
 private:
 	// This reference is provided as a quick way for your editor to
 	// access the processor object that created it.
-	_4A2AAudioProcessor& audioProcessor;
-	juce::AudioProcessorValueTreeState& valueTreeState;
+	_4A2AAudioProcessor &audioProcessor;
+	juce::AudioProcessorValueTreeState &valueTreeState;
 
 	std::unique_ptr<SliderAttachment> thresholdAttachment, ratioAttachment,
 		attackMsAttachment, releaseMsAttachment, makeUpAttachment;
@@ -40,8 +40,8 @@ private:
 	juce::Label peakReductionLabel, thresholdLabel, ratioLabel, attackMsLabel,
 		releaseMsLabel, makeUpLabel;
 
-	float peakPoints[13] = { 40, 45, 50, 55, 60, 65, 70,
-							75, 80, 85, 90, 95, 100 };
+	float peakPoints[13] = {40, 45, 50, 55, 60, 65, 70,
+							75, 80, 85, 90, 95, 100};
 	float paramPoints[13][5] = {
 		{-13.075952529907227, 5.435610294342041, 30.516525268554688,
 		 470.176513671875, 0.697806715965271},
@@ -68,7 +68,7 @@ private:
 		{-33.69828796386719, 3.791938066482544, 1.0862258672714233,
 		 244.5567626953125, 0.1468079835176468},
 		{-35.34008026123047, 3.711195945739746, 0.9788835048675537,
-		 244.128662109375, 0.3002852201461792} };
+		 244.128662109375, 0.3002852201461792}};
 
 	std::array<float, 5> interp(float peakValue);
 
