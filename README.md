@@ -9,7 +9,7 @@ We implement a mapping function $\mathbb{R} \to \mathbb{R}^5$ that maps the peak
 
 ![](media/gui.png)
 
-The plugin comes with six sliders, which are:
+The plugin comes with six sliders and one button, which are:
 
 1. `Threshold` - The threshold of the compressor in dB.
 2. `Ratio` - The ratio of the compressor (1 to 20).
@@ -17,6 +17,7 @@ The plugin comes with six sliders, which are:
 4. `Release` - The release time of the compressor in ms (100 to 1000).
 5. `Make-up` - The make-up gain of the compressor in dB.
 6. `Peak Reduction` - The emulated peak reduction of the LA-2A (40 to 100). This slider controls the other five sliders and overrides their values.
+7. `Comp./Limit.` - The mode of the compressor. When the button is changed, sliders 1-5 are also changed based on the peak reduction.
 
 ## Installation
 
