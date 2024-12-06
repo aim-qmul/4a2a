@@ -18,6 +18,22 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	// editor's size to whatever you need it to be.
 	setSize(400, 300);
 
+	modeSwitch.setClickingTogglesState(true);
+	modeSwitch.setColour(juce::TextButton::buttonOnColourId, juce::Colours::dimgrey);
+	modeSwitch.onClick = [this]
+	{
+		auto mode = modeSwitch.getToggleState();
+		modeSwitch.setButtonText(mode ? "Limiter Mode" : "Compressor Mode");
+		auto peakValue = peakReduction.getValue();
+		auto params = interp(peakValue, mode);
+		threshold.setValue(params[0]);
+		ratio.setValue(params[1]);
+		attackMs.setValue(params[2]);
+		releaseMs.setValue(params[3]);
+		makeUp.setValue(params[4]);
+	};
+	modeSwitch.setButtonText("Compressor Mode");
+
 	peakReduction.setRange(40, 100);
 	peakReduction.setValue(40);
 
@@ -58,7 +74,8 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 
 	peakReduction.onValueChange = [this]
 	{
-		auto params = interp(peakReduction.getValue());
+		auto mode = modeSwitch.getToggleState();
+		auto params = interp(peakReduction.getValue(), mode);
 		threshold.setValue(params[0]);
 		ratio.setValue(params[1]);
 		attackMs.setValue(params[2]);
@@ -89,6 +106,7 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	addAndMakeVisible(&releaseMsLabel);
 	addAndMakeVisible(&makeUp);
 	addAndMakeVisible(&makeUpLabel);
+	addAndMakeVisible(&modeSwitch);
 
 	thresholdAttachment.reset(
 		new SliderAttachment(valueTreeState, "th", threshold));
@@ -99,6 +117,8 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 		new SliderAttachment(valueTreeState, "rt", releaseMs));
 	makeUpAttachment.reset(
 		new SliderAttachment(valueTreeState, "makeUp", makeUp));
+	modeAttachment.reset(
+		new ButtonAttachment(valueTreeState, "mode", modeSwitch));
 }
 
 _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
@@ -138,10 +158,12 @@ void _4A2AAudioProcessorEditor::resized()
 	makeUp.setBounds(sliderLeft, 160, getWidth() - sliderLeft - 10, 20);
 
 	peakReduction.setBounds(sliderLeft, 220, getWidth() - sliderLeft - 10, 20);
+	modeSwitch.setBounds(sliderLeft, 250, getWidth() - sliderLeft - 10, 20);
 }
 
-std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue)
+std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue, bool limitMode)
 {
+	auto &paramPoints = limitMode ? limitPoints : compPoints;
 	auto normalisedPeak = (peakValue - peakPoints[0]) * 0.2;
 	int lower = std::min(11, (int)normalisedPeak);
 	int upper = lower + 1;

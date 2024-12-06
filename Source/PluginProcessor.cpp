@@ -35,7 +35,9 @@ _4A2AAudioProcessor::_4A2AAudioProcessor()
 			   juce::ParameterID{"rt", 1}, "release", 100.0f, 1000.0f, 200.f),
 		   std::make_unique<juce::AudioParameterFloat>(
 			   juce::ParameterID{"makeUp", 1}, "makeUp", -12.0f, 12.0f,
-			   0.0f)})
+			   0.0f),
+		   std::make_unique<juce::AudioParameterBool>(
+			   juce::ParameterID{"mode", 1}, "limitMode", false)})
 {
 	thParam = paramState.getRawParameterValue("th");
 	ratioParam = paramState.getRawParameterValue("ratio");
