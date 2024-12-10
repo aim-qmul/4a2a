@@ -163,7 +163,7 @@ void _4A2AAudioProcessorEditor::resized()
 
 std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue, bool limitMode)
 {
-	auto &paramPoints = limitMode ? limitPoints : compPoints;
+	auto *paramPoints = limitMode ? limitPoints : compPoints;
 	auto normalisedPeak = (peakValue - peakPoints[0]) * 0.2;
 	int lower = std::min(11, (int)normalisedPeak);
 	int upper = lower + 1;
