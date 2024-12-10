@@ -18,6 +18,22 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	// editor's size to whatever you need it to be.
 	setSize(400, 300);
 
+	modeSwitch.setClickingTogglesState(true);
+	modeSwitch.setColour(juce::TextButton::buttonOnColourId, juce::Colours::dimgrey);
+	modeSwitch.onClick = [this]
+	{
+		auto mode = modeSwitch.getToggleState();
+		modeSwitch.setButtonText(mode ? "Limiter Mode" : "Compressor Mode");
+		auto peakValue = peakReduction.getValue();
+		auto params = interp(peakValue, mode);
+		threshold.setValue(params[0]);
+		ratio.setValue(params[1]);
+		attackMs.setValue(params[2]);
+		releaseMs.setValue(params[3]);
+		makeUp.setValue(params[4]);
+	};
+	modeSwitch.setButtonText("Compressor Mode");
+
 	peakReduction.setRange(40, 100);
 	peakReduction.setValue(40);
 
@@ -58,13 +74,25 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 
 	peakReduction.onValueChange = [this]
 	{
-		auto params = interp(peakReduction.getValue());
+		auto mode = modeSwitch.getToggleState();
+		auto params = interp(peakReduction.getValue(), mode);
 		threshold.setValue(params[0]);
 		ratio.setValue(params[1]);
 		attackMs.setValue(params[2]);
 		releaseMs.setValue(params[3]);
 		makeUp.setValue(params[4]);
 	};
+
+	getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::red);
+	getLookAndFeel().setColour(juce::Label::textColourId, juce::Colours::black);
+
+	// Manually set the text box colour as look&feel doesn't seem to work
+	peakReduction.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+	threshold.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+	ratio.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+	attackMs.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+	releaseMs.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
+	makeUp.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black);
 
 	addAndMakeVisible(&peakReduction);
 	addAndMakeVisible(&peakReductionLabel);
@@ -78,6 +106,7 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	addAndMakeVisible(&releaseMsLabel);
 	addAndMakeVisible(&makeUp);
 	addAndMakeVisible(&makeUpLabel);
+	addAndMakeVisible(&modeSwitch);
 
 	thresholdAttachment.reset(
 		new SliderAttachment(valueTreeState, "th", threshold));
@@ -88,6 +117,8 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 		new SliderAttachment(valueTreeState, "rt", releaseMs));
 	makeUpAttachment.reset(
 		new SliderAttachment(valueTreeState, "makeUp", makeUp));
+	modeAttachment.reset(
+		new ButtonAttachment(valueTreeState, "mode", modeSwitch));
 }
 
 _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
@@ -97,16 +128,17 @@ _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
 	attackMsAttachment.reset();
 	releaseMsAttachment.reset();
 	makeUpAttachment.reset();
+	modeAttachment.reset();
 }
 
 //==============================================================================
 void _4A2AAudioProcessorEditor::paint(juce::Graphics &g)
 {
 	// fill the whole window white
-	//    g.fillAll (juce::Colours::white);
+	g.fillAll(juce::Colours::white);
 
 	// set the current drawing colour to black
-	g.setColour(juce::Colours::white);
+	g.setColour(juce::Colours::black);
 
 	// set the font size and draw text to the screen
 	g.setFont(25.0f);
@@ -120,24 +152,23 @@ void _4A2AAudioProcessorEditor::resized()
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
 	auto sliderLeft = 120;
-	peakReduction.setBounds(sliderLeft, 40, getWidth() - sliderLeft - 10, 20);
-	threshold.setBounds(sliderLeft, 70, getWidth() - sliderLeft - 10, 20);
-	ratio.setBounds(sliderLeft, 100, getWidth() - sliderLeft - 10, 20);
-	attackMs.setBounds(sliderLeft, 130, getWidth() - sliderLeft - 10, 20);
-	releaseMs.setBounds(sliderLeft, 160, getWidth() - sliderLeft - 10, 20);
-	makeUp.setBounds(sliderLeft, 190, getWidth() - sliderLeft - 10, 20);
+	threshold.setBounds(sliderLeft, 40, getWidth() - sliderLeft - 10, 20);
+	ratio.setBounds(sliderLeft, 70, getWidth() - sliderLeft - 10, 20);
+	attackMs.setBounds(sliderLeft, 100, getWidth() - sliderLeft - 10, 20);
+	releaseMs.setBounds(sliderLeft, 130, getWidth() - sliderLeft - 10, 20);
+	makeUp.setBounds(sliderLeft, 160, getWidth() - sliderLeft - 10, 20);
+
+	peakReduction.setBounds(sliderLeft, 220, getWidth() - sliderLeft - 10, 20);
+	modeSwitch.setBounds(sliderLeft, 250, getWidth() - sliderLeft - 10, 20);
 }
 
-std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue)
+std::array<float, 5> _4A2AAudioProcessorEditor::interp(float peakValue, bool limitMode)
 {
-	int upper;
-	for (upper = 1; upper < 13; upper++)
-	{
-		if (peakPoints[upper] >= peakValue)
-			break;
-	}
-	auto lower = upper - 1;
-	auto p = (peakValue - peakPoints[lower]) / (peakPoints[upper] - peakPoints[lower]);
+	auto *paramPoints = limitMode ? limitPoints : compPoints;
+	auto normalisedPeak = (peakValue - peakPoints[0]) * 0.2;
+	int lower = std::min(11, (int)normalisedPeak);
+	int upper = lower + 1;
+	auto p = normalisedPeak - lower;
 	std::array<float, 5> interpParam;
 	std::transform(std::begin(paramPoints[upper]), std::end(paramPoints[upper]),
 				   std::begin(paramPoints[lower]), interpParam.begin(),
