@@ -128,6 +128,7 @@ _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
 	attackMsAttachment.reset();
 	releaseMsAttachment.reset();
 	makeUpAttachment.reset();
+	modeAttachment.reset();
 }
 
 //==============================================================================
