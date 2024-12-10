@@ -21,7 +21,7 @@ The plugin comes with six sliders and one button, which are:
 
 ## Installation
 
-The pre-built VST3 binaries for Windows and macOS can be found in the [releases]().
+The pre-built VST3 binaries for Windows and macOS can be found in the [releases](https://github.com/aim-qmul/4a2a/releases).
 One can also build the plugin from source using the [Projucer](https://juce.com/download/) project file.
 
 ## Training code
