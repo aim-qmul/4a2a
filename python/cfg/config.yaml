@@ -8,7 +8,7 @@ compressor:
     attack_ms: 1
     release_ms: 200
     make_up_gain: 0
-  range:
+  range:      # The ranges shouldn't be modified otherwise the eval.py will not work!
     ratio:
       min: 1
       max: 20
