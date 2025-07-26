@@ -35,7 +35,7 @@ The `epochs` argument specifies the number of training epochs, though if the new
 Next, you can should train the compressor with peak reduction of 95 using the previous runned parameters as the initial parameters.
 
 ```bash
-python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_95  data.train.input=$SIGNALTRAIN/Train/input_157_.wav data.train.target=$SIGNALTRAIN/Train/target_157_LA2A_3c__0__95.wav  compressor.inits.params=$CHECKPOINTPATH/la2a_100/logits.pt
+python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_95  data.train.input=$SIGNALTRAIN/Train/input_157_.wav data.train.target=$SIGNALTRAIN/Train/target_157_LA2A_3c__0__95.wav  compressor.init_ckpt=$CHECKPOINTPATH/la2a_100/logits.pt
 ```
 
 This process should be repeated for each peak reduction level you want to train, e.g., 90, 85, ..., down to 40.
@@ -89,13 +89,30 @@ python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files
 The exact path to the UAD VST3 plugin may vary depending on your installation or system.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
+## GRU Make-up Gain
+
+Please first run the following command to process the SignalTrain input audio files with the trained compressor but without the make-up gain.
+
+```bash
+python 4a2a_render.py
+```
+
+Please modify the path variables that points to the SignalTrain dataset, the output directory, and the checkpoint directory in `4a2a_render.py` before running the command.
+
+Next, you can run the following command to train the GRU make-up gain model.
+
+```bash
+python train_gru.py
+```
+
+Please modify the path variables that points to the directory containing the processed audio and the SignalTrain dataset in `train_gru.py` before running the command.
+After running the command, you should have multiple checkpoints with the name `gru_jit_no_overlap_{epoch}_{loss}.pt` in the current directory.
+We pick the one with the lowest loss as the final model.
+
 ## Additional notes
-- `cfg/data/ff_*.yaml` are configurations for the feed-forward compressor experiments (FF-A/B/C in the paper). Please use `digital_compressor.py` to get the targets if you want to reproduce the experiments.
+
 
 ## Links
-
-- [torchcomp](https://github.com/yoyololicon/torchcomp): Differentiable compressor implementation.
-- [training logs](https://wandb.ai/iamycy/torchcomp-la2a/): All training logs of the compressor experiments in the paper.
 
 ## Citation
 
