@@ -41,8 +41,10 @@ peak_reductions = list(range(40, 101, 5))
 
 @torch.no_grad()
 def runner(ckpt_path, mode: int):
-    for log, peak_reduction in tqdm(zip(map(lambda x: ckpt_path / f"la2a_{x}", peak_reductions), peak_reductions),
-                                    total=len(peak_reductions)):
+    for log, peak_reduction in tqdm(
+        zip(map(lambda x: ckpt_path / f"la2a_{x}", peak_reductions), peak_reductions),
+        total=len(peak_reductions),
+    ):
         with open(log / "config.yaml") as f:
             config = yaml.safe_load(f)
         range_details = config["compressor"]["range"]
@@ -53,11 +55,17 @@ def runner(ckpt_path, mode: int):
         assert range_details["ratio"]["min"] == RATIO_MIN
         assert range_details["ratio"]["max"] == RATIO_MAX
 
-        params = my_logits2comp_params(torch.load(log / "logits.pt", map_location="cpu"))
-        params["make_up"].zero_()
+        params = my_logits2comp_params(
+            torch.load(log / "logits.pt", map_location="cpu")
+        )
+        params[
+            "make_up"
+        ].zero_()  # comment out this line if you want to use make-up gain (the original 4A2A)
 
         for match_file in signaltrain_path.glob(f"**/*c__{mode}__{peak_reduction}.wav"):
-            input_file = match_file.parent / f"input_{match_file.stem.split('_')[1]}_.wav"
+            input_file = (
+                match_file.parent / f"input_{match_file.stem.split('_')[1]}_.wav"
+            )
             assert input_file.exists(), f"input file {input_file} does not exist"
 
             output_file = output_path / match_file.relative_to(signaltrain_path)
