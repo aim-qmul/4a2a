@@ -11,7 +11,7 @@ Please install the required packages, including the differentiable compressor [t
 pip install -r requirements.txt
 ```
 
-## Training
+## Training 4A2A compressor
 
 Firstly, you need to download the SignalTrain dataset from [here](https://zenodo.org/records/3824876).
 The following code will assumes that `$SIGNALTRAIN` is the path to the dataset.
@@ -41,11 +41,9 @@ python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_95  data.train.input=$SIGNALT
 This process should be repeated for each peak reduction level you want to train, e.g., 90, 85, ..., down to 40.
 To train with limiter mode, simply select the wave file with `3c__1__` in the name, e.g., `Train/target_179_LA2A_3c__1__100.wav`, and repeat the same process as above starting from the peak reduction of 100.
 
-## Evaluation
+### Evaluation
 
-### Feed-forward compressor
-
-After [training](#training), you should have a directory `$CHECKPOINTPATH` containing subdirectories for each peak reduction level, e.g., `la2a_100`, `la2a_95`, ..., `la2a_40`.
+After [training](#training-4a2a-compressor), you should have a directory `$CHECKPOINTPATH` containing subdirectories for each peak reduction level, e.g., `la2a_100`, `la2a_95`, ..., `la2a_40`.
 The following command will gather the learnt parameters from all the subdirectories, calculate the error signal ratio (ESR) of the compressor, and store the results in a CSV file.
 In addition, the ESR of linear and spline interpolations of the parameters at peak reduction levels 95, 85, 75, 65, 55, and 45 will also be calculated and stored in the same CSV file.
 
@@ -55,6 +53,8 @@ python eval.py $CHECKPOINTPATH comp.csv
 
 Pre-computed evaluation results are available [here](evaluations/).
 
+## Baselines
+
 ### VST plugins (Windows system only)
 
 Please make sure you have the following LA-2A VST3 plugins installed:
@@ -62,12 +62,12 @@ Please make sure you have the following LA-2A VST3 plugins installed:
 - [Waves CLA-2A](https://www.waves.com/plugins/cla-2a-compressor-limiter)
 - [UAD Audio UAD LA-2A](https://www.uaudio.com/uad-plugins/compressors-limiters/teletronix-la-2a-tube-compressor.html)
 
-The following command will evaluate their ESR on every audio files with `*3c*` substrings, print the results to the console, and save the rendered audio files in the specified `$OUTPUTPATH`.
+The following command will render audio files with `*3c*` substrings and save them in the specified `$OUTPUTPATH`.
 
 #### CA-2A
 
 ```bash
-python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\CA2ALevelingAmplifier\CA-2ALevelingAmplifier_64.vst3" --brand cakewalk --gain 0 --out-gain 38
+python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\CA2ALevelingAmplifier\CA-2ALevelingAmplifier_64.vst3" --brand cakewalk --gain 0 --out-gain 38
 ```
 
 The exact path to the CA-2A VST3 plugin may vary depending on your installation or system.
@@ -76,7 +76,7 @@ Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is 
 #### CLA-2A
 
 ```bash
-python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\WaveShell1-VST3 15.5_x64.vst3" --brand waves --gain -16 --out-gain 50
+python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\WaveShell1-VST3 15.5_x64.vst3" --brand waves --gain -16 --out-gain 50
 ```
 The exact path to the Waves VST3 plugin may vary depending on your installation or system.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
@@ -84,14 +84,15 @@ Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is 
 #### UAD 
 
 ```bash
-python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\uaudio_teletronix_la-2a_tc.vst3\Contents\x86_64-win\uaudio_teletronix_la-2a_tc.vst3" --brand uad --gain -12 --out-gain 46
+python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\uaudio_teletronix_la-2a_tc.vst3\Contents\x86_64-win\uaudio_teletronix_la-2a_tc.vst3" --brand uad --gain -12 --out-gain 46
 ```
 The exact path to the UAD VST3 plugin may vary depending on your installation or system.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
-## GRU Make-up Gain
+### GRU Make-up Gain
 
 Please first run the following command to process the SignalTrain input audio files with the trained compressor but without the make-up gain.
+(To render with make-up gain, please comment out relevant line in `4a2a_render.py`.)
 
 ```bash
 python 4a2a_render.py
@@ -99,15 +100,26 @@ python 4a2a_render.py
 
 Please modify the path variables that points to the SignalTrain dataset, the output directory, and the checkpoint directory in `4a2a_render.py` before running the command.
 
-Next, you can run the following command to train the GRU make-up gain model.
+Next, run the following command to train the GRU make-up gain model.
 
 ```bash
 python train_gru.py
 ```
 
 Please modify the path variables that points to the directory containing the processed audio and the SignalTrain dataset in `train_gru.py` before running the command.
-After running the command, you should have multiple checkpoints with the name `gru_jit_no_overlap_{epoch}_{loss}.pt` in the current directory.
+Afterwards, you should have multiple checkpoints with the name `gru_jit_no_overlap_{epoch}_{loss}.pt` in the current directory.
 We pick the one with the lowest loss as the final model.
+
+Lastly, run the following command to render the processed audio files with the best GRU make-up gain model.
+
+```bash
+python gru_render.py
+```
+
+Please modify the path variables, model path, output directory, and the file name pattern (e.g., `3c__1` for limiter mode) in `gru_render.py` before running the command.
+After having the rendered audio files, you can evaluate them using the same command as above (see [Evaluation](#evaluation)).
+
+### Evaluation
 
 ## Additional notes
 
