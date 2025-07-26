@@ -12,17 +12,6 @@ ik_vst_path = r"C:\Program Files\Common Files\VST3\TR5 White 2A.vst3"
 cakewalk_vst_path = r"C:\Program Files\Common Files\VST3\CA2ALevelingAmplifier\CA-2ALevelingAmplifier_64.vst3"
 
 
-def find_time_offset(x: np.ndarray, y: np.ndarray):
-    N = x.size
-    M = y.size
-
-    X = np.fft.rfft(x, n=N + M - 1)
-    Y = np.fft.rfft(y, n=N + M - 1)
-    corr = np.fft.irfft(X.conj() * Y)
-    shifts = np.argmax(corr, axis=-1)
-    return np.where(shifts >= N, shifts - N - M + 1, shifts)
-
-
 def esr(signal, target, adaptive_scale=False):
     signal = lfilter([1, -1], [1, -0.995], signal)
     target = lfilter([1, -1], [1, -0.995], target)
