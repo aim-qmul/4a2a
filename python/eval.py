@@ -186,7 +186,7 @@ def main():
         f.write(
             "Peak Reduction,ESR,,,Threshold (dB),Ratio,Attack (ms),Release (ms), Make-up Gain (dB)\n"
         )
-        f.write(",GT,Linear Interpolation,Spline Interpolation\n")
+        f.write(",GT,Linear Interpolation,Spline Interpolation,,,,,\n")
         for peak, gt, linear, spline, param in zip(
             peak_reductions,
             error_bounds,
