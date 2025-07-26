@@ -43,6 +43,8 @@ To train with limiter mode, simply select the wave file with `3c__1__` in the na
 
 ## Evaluation
 
+### Feed-forward compressor
+
 After [training](#training), you should have a directory `$CHECKPOINTPATH` containing subdirectories for each peak reduction level, e.g., `la2a_100`, `la2a_95`, ..., `la2a_40`.
 The following command will gather the learnt parameters from all the subdirectories, calculate the error signal ratio (ESR) of the compressor, and store the results in a CSV file.
 In addition, the ESR of linear and spline interpolations of the parameters at peak reduction levels 95, 85, 75, 65, 55, and 45 will also be calculated and stored in the same CSV file.
@@ -53,6 +55,39 @@ python eval.py $CHECKPOINTPATH comp.csv
 
 Pre-computed evaluation results are available [here](evaluations/).
 
+### VST plugins (Windows system only)
+
+Please make sure you have the following LA-2A VST3 plugins installed:
+- [Cakewalk CA-2A](https://legacy.cakewalk.com/Products/CA-2A)
+- [Waves CLA-2A](https://www.waves.com/plugins/cla-2a-compressor-limiter)
+- [UAD Audio UAD LA-2A](https://www.uaudio.com/uad-plugins/compressors-limiters/teletronix-la-2a-tube-compressor.html)
+
+The following command will evaluate their ESR on every audio files with `*3c*` substrings, print the results to the console, and save the rendered audio files in the specified `$OUTPUTPATH`.
+
+#### CA-2A
+
+```bash
+python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\CA2ALevelingAmplifier\CA-2ALevelingAmplifier_64.vst3" --brand cakewalk --gain 0 --out-gain 38
+```
+
+The exact path to the CA-2A VST3 plugin may vary depending on your installation or system.
+Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
+
+#### CLA-2A
+
+```bash
+python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\WaveShell1-VST3 15.5_x64.vst3" --brand waves --gain -16 --out-gain 50
+```
+The exact path to the Waves VST3 plugin may vary depending on your installation or system.
+Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
+
+#### UAD 
+
+```bash
+python eval_vst.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\uaudio_teletronix_la-2a_tc.vst3\Contents\x86_64-win\uaudio_teletronix_la-2a_tc.vst3" --brand uad --gain -12 --out-gain 46
+```
+The exact path to the UAD VST3 plugin may vary depending on your installation or system.
+Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
 ## Additional notes
 - `cfg/data/ff_*.yaml` are configurations for the feed-forward compressor experiments (FF-A/B/C in the paper). Please use `digital_compressor.py` to get the targets if you want to reproduce the experiments.
