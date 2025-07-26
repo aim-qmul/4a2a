@@ -1,0 +1,7 @@
+torch
+torchaudio
+hydra-core
+pyloudnorm
+torchlpc
+torchcomp
+wandb
