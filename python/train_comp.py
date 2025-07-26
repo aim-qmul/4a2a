@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Tuple
 import yaml
 from torchaudio import load
 from torchcomp import ms2coef, coef2ms, db2amp, amp2db
-from torchlpc import sample_wise_lpc
 import pyloudnorm as pyln
 
 from utils import (
@@ -23,6 +22,7 @@ from utils import (
     esr,
     chain_functions,
     logits2comp_params,
+    simple_filter,
 )
 
 
@@ -49,13 +49,6 @@ def conjugate_gradient(p, func, g):
         p_t = -r_new + beta_t * p_t
         r_t = r_new
     return -v_t
-
-
-def simple_filter(x: torch.Tensor, a1: torch.Tensor, b1: torch.Tensor) -> torch.Tensor:
-    return sample_wise_lpc(
-        x + b1 * torch.cat([x.new_zeros(x.shape[0], 1), x[:, :-1]], dim=1),
-        a1.broadcast_to(x.shape + (1,)),
-    )
 
 
 @hydra.main(config_path="cfg", config_name="config")
