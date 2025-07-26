@@ -117,25 +117,21 @@ python gru_render.py
 ```
 
 Please modify the path variables, model path, output directory, and the file name pattern (e.g., `3c__1` for limiter mode) in `gru_render.py` before running the command.
-After having the rendered audio files, you can evaluate them using the same command as above (see [Evaluation](#evaluation)).
 
 #### Real-time Neutone plugin
 
-To convert the GRU make-up gain model into format compatible with the [Neutone Fx](https://neutone.ai/fx), please run the following command:
+To convert the GRU make-up gain model into format compatible with the [Neutone FX](https://neutone.ai/fx), please run the following command:
 
 ```bash
 python convert.py
 ```
 
 Please modify the checkpoint path that needs to be converted in `convert.py` before running the command.
-It will create a directory `neutone_gru` containing the converted model files, which can be loaded in the Neutone Fx plugin.
+It will create a directory `neutone_gru` containing the converted model files, which can be loaded in the Neutone FX plugin.
 
-### Evaluation
+## Comparison and Visualisation
 
 ## Additional notes
-
-
-## Links
 
 ## Citation
 
