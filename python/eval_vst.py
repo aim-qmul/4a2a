@@ -151,8 +151,6 @@ def main():
             signaltrain.glob(f"**/*3c__{args.mode}__*.wav"),
         )
     )
-    # target_files = target_files[:1] + target_files
-
     esr_list = [0] * len(target_files)
     with tqdm(target_files) as pbar:
         for target_file in pbar:
@@ -188,7 +186,6 @@ def main():
             # db_diff = compare_loudness(output_file, target_file)
 
             target, _ = sf.read(target_file)
-            # pred, _ = sf.read(output_file)
             print(pred.shape, target.shape)
             esr_loss, scaler = esr(
                 pred[: target.size], target[: pred.size], args.adaptive_scale
