@@ -23,10 +23,10 @@ You can modify the configurations directly or use the command line arguments to 
 For peak reduction of 100 in compressor mode, you should run the following command:
 
 ```bash
-python train_comp.py ckpt_dir=$CHECKPOINTPATH/comp_100 data.train.input=$SIGNALTRAIN/Train/input_158_.wav data.train.target=$SIGNALTRAIN/Train/target_158_LA2A_3c__0__100.wav
+python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_100 data.train.input=$SIGNALTRAIN/Train/input_158_.wav data.train.target=$SIGNALTRAIN/Train/target_158_LA2A_3c__0__100.wav
 ```
 
-After running the command, the learnt parameters and training configs will be saved under the directory `$CHECKPOINTPATH/comp/comp_100`.
+After running the command, the learnt parameters and training configs will be saved under the directory `$CHECKPOINTPATH/comp/la2a_100`.
 Please use absolute paths for the `ckpt_dir`, `data.train.input`, and `data.train.target` arguments, due to the current limitation of Hydra.
 If your GPU does not have enough memory, you can specify the `batch_size` argument to reduce the memory usage, e.g., `data.batch_size=8`.
 By default, the training use the whole sequence, which corresponds to `data.batch_size=-1`.
@@ -35,7 +35,7 @@ The `epochs` argument specifies the number of training epochs, though if the new
 Next, you can should train the compressor with peak reduction of 95 using the previous runned parameters as the initial parameters.
 
 ```bash
-python train_comp.py ckpt_dir=$CHECKPOINTPATH/comp_95  data.train.input=$SIGNALTRAIN/Train/input_157_.wav data.train.target=$SIGNALTRAIN/Train/target_157_LA2A_3c__0__95.wav  compressor.inits.params=$CHECKPOINTPATH/comp_100/logits.pt
+python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_95  data.train.input=$SIGNALTRAIN/Train/input_157_.wav data.train.target=$SIGNALTRAIN/Train/target_157_LA2A_3c__0__95.wav  compressor.inits.params=$CHECKPOINTPATH/la2a_100/logits.pt
 ```
 
 This process should be repeated for each peak reduction level you want to train, e.g., 90, 85, ..., down to 40.
@@ -43,14 +43,15 @@ To train with limiter mode, simply select the wave file with `3c__1__` in the na
 
 ## Evaluation
 
-After [training](#training), you should have a directory `$CHECKPOINTPATH` containing the checkpoints for each peak reduction level.
-
-You can use your checkpoints `ckpt.yaml` or our provided learned parameters to evaluate the compressor.
-Given a wave file, you can compress it using the following command:
+After [training](#training), you should have a directory `$CHECKPOINTPATH` containing subdirectories for each peak reduction level, e.g., `la2a_100`, `la2a_95`, ..., `la2a_40`.
+The following command will gather the learnt parameters from all the subdirectories, calculate the error signal ratio (ESR) of the compressor, and store the results in a CSV file.
+In addition, the ESR of linear and spline interpolations of the parameters at peak reduction levels 95, 85, 75, 65, 55, and 45 will also be calculated and stored in the same CSV file.
 
 ```bash
-python test_comp.py ckpt.yaml input.wav output.wav
+python eval.py $CHECKPOINTPATH comp.csv
 ```
+
+Pre-computed evaluation results are available [here](evaluations/).
 
 
 ## Additional notes
