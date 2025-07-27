@@ -14,11 +14,11 @@ pip install -r requirements.txt
 ## Training 4A2A compressor
 
 Firstly, you need to download the SignalTrain dataset from [here](https://zenodo.org/records/3824876).
-The following code will assumes that `$SIGNALTRAIN` is the path to the dataset.
+The following code assumes that `$SIGNALTRAIN` is the path to the dataset.
 
 In the paper, we fit the differentiable feed-forward compressor starting with the maximum peak reduction of 100.
 The training configurations and initial parameters are listed in `cfg/config.yaml`.
-You can modify the configurations directly or use the command line arguments to override them (for details, please refer to the [Hydra documentation](https://hydra.cc/docs/intro/)).
+You can modify the configurations directly or use command-line arguments to override them (for details, please refer to the [Hydra documentation](https://hydra.cc/docs/intro/)).
 
 For peak reduction of 100 in compressor mode, you should run the following command:
 
@@ -29,23 +29,23 @@ python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_100 data.train.input=$SIGNALT
 After running the command, the learnt parameters and training configs will be saved under the directory `$CHECKPOINTPATH/comp/la2a_100`.
 Please use absolute paths for the `ckpt_dir`, `data.train.input`, and `data.train.target` arguments, due to the current limitation of Hydra.
 If your GPU does not have enough memory, you can specify the `batch_size` argument to reduce the memory usage, e.g., `data.batch_size=8`.
-By default, the training use the whole sequence, which corresponds to `data.batch_size=-1`.
-The `epochs` argument specifies the number of training epochs, though if the newton method converges, the training will stop early.
+By default, the script uses the entire sequence, corresponding to `data.batch_size=-1`.
+The `epochs` argument specifies the number of training epochs, though if the Newton method converges, the training will stop early.
 
-Next, you can should train the compressor with peak reduction of 95 using the previous runned parameters as the initial parameters.
+Next, you should train the compressor with peak reduction of 95 using the previous run parameters as the initial parameters.
 
 ```bash
 python train_comp.py ckpt_dir=$CHECKPOINTPATH/la2a_95  data.train.input=$SIGNALTRAIN/Train/input_157_.wav data.train.target=$SIGNALTRAIN/Train/target_157_LA2A_3c__0__95.wav  compressor.init_ckpt=$CHECKPOINTPATH/la2a_100/logits.pt
 ```
 
 This process should be repeated for each peak reduction level you want to train, e.g., 90, 85, ..., down to 40.
-To train with limiter mode, simply select the wave file with `3c__1__` in the name, e.g., `Train/target_179_LA2A_3c__1__100.wav`, and repeat the same process as above starting from the peak reduction of 100.
+To train with limiter mode, select the wave file with `3c__1__` in the name, e.g., `Train/target_179_LA2A_3c__1__100.wav`, and repeat the same process as above starting from the peak reduction of 100.
 
 ### Evaluation
 
 After [training](#training-4a2a-compressor), you should have a directory `$CHECKPOINTPATH` containing subdirectories for each peak reduction level, e.g., `la2a_100`, `la2a_95`, ..., `la2a_40`.
 The following command will gather the learnt parameters from all the subdirectories, calculate the error signal ratio (ESR) of the compressor, and store the results in a CSV file.
-In addition, the ESR of linear and spline interpolations of the parameters at peak reduction levels 95, 85, 75, 65, 55, and 45 will also be calculated and stored in the same CSV file.
+Additionally, the ESR of linear and spline interpolations of the parameters at peak reduction levels of 95, 85, 75, 65, 55, and 45 will also be calculated and stored in the same CSV file.
 
 ```bash
 python eval.py $CHECKPOINTPATH comp.csv
@@ -70,7 +70,7 @@ The following command will render audio files with `*3c*` substrings and save th
 python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\CA2ALevelingAmplifier\CA-2ALevelingAmplifier_64.vst3" --brand cakewalk --gain 0 --out-gain 38
 ```
 
-The exact path to the CA-2A VST3 plugin may vary depending on your installation or system.
+The exact path to the CA-2A VST3 plugin may vary depending on your system and installation.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
 #### CLA-2A
@@ -78,7 +78,7 @@ Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is 
 ```bash
 python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\WaveShell1-VST3 15.5_x64.vst3" --brand waves --gain -16 --out-gain 50
 ```
-The exact path to the Waves VST3 plugin may vary depending on your installation or system.
+The exact path to the Waves VST3 plugin may vary depending on your system and installation.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
 #### UAD 
@@ -86,19 +86,19 @@ Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is 
 ```bash
 python vst_render.py $SIGNALTRAIN $OUTPUTPATH --vst "C:\Program Files\Common Files\VST3\uaudio_teletronix_la-2a_tc.vst3\Contents\x86_64-win\uaudio_teletronix_la-2a_tc.vst3" --brand uad --gain -12 --out-gain 46
 ```
-The exact path to the UAD VST3 plugin may vary depending on your installation or system.
+The exact path to the UAD VST3 plugin may vary depending on your system and installation.
 Use `--mode` to specify the mode, e.g., `--mode 1` for limiter mode. Default is compressor mode.
 
 ### GRU Make-up Gain
 
-Please first run the following command to process the SignalTrain input audio files with the trained compressor but without the make-up gain.
-(To render with make-up gain, please comment out relevant line in `4a2a_render.py`.)
+Please first run the following command to process the SignalTrain input audio files with the trained compressor, but without the make-up gain.
+(To render with make-up gain, please comment out the relevant line in `4a2a_render.py`.)
 
 ```bash
 python 4a2a_render.py
 ```
 
-Please modify the path variables that points to the SignalTrain dataset, the output directory, and the checkpoint directory in `4a2a_render.py` before running the command.
+Please modify the path variables that point to the SignalTrain dataset, the output directory, and the checkpoint directory in `4a2a_render.py` before running the command.
 
 Next, run the following command to train the GRU make-up gain model.
 
@@ -106,7 +106,7 @@ Next, run the following command to train the GRU make-up gain model.
 python train_gru.py
 ```
 
-Please modify the path variables that points to the directory containing the processed audio and the SignalTrain dataset in `train_gru.py` before running the command.
+Please modify the path variables that point to the directory containing the processed audio and the SignalTrain dataset in `train_gru.py` before running the command.
 Afterwards, you should have multiple checkpoints with the name `gru_jit_no_overlap_{epoch}_{loss}.pt` in the current directory.
 We pick the one with the lowest loss as the final model.
 
@@ -120,7 +120,7 @@ Please modify the path variables, model path, output directory, and the file nam
 
 #### Real-time Neutone plugin
 
-To convert the GRU make-up gain model into format compatible with the [Neutone FX](https://neutone.ai/fx), please run the following command:
+To convert the GRU make-up gain model into a format compatible with the [Neutone FX](https://neutone.ai/fx), please run the following command:
 
 ```bash
 python convert.py
@@ -132,7 +132,7 @@ It will create a directory `neutone_gru` containing the converted model files, w
 ## Comparison and Visualisation
 
 After rendering the audio files with the trained compressor and the baselines, you can run the [compare](compare.ipynb) notebook to compute the ESR and Loudness Dynamic Range difference ($`\Delta`$LDR) between the rendered audio files and the target audio files.
-It also plot Figure 6 in the paper.
+It also plots Figure 6 in the paper.
 Pre-computed evaluation scores are available [here](evaluations/scores.csv). 
 
 ## Citation
@@ -140,7 +140,7 @@ Pre-computed evaluation scores are available [here](evaluations/scores.csv).
 ```bibtex
 @inproceedings{ycy2025Newtone,
   title={Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method},
-  author={Chin-Yun Yu  and György Fazekas},
+  author={Chin-Yun Yu and György Fazekas},
   booktitle={AES International Conference on Artificial Intelligence and Machine Learning for Audio},
   address={London, UK},
   year={2025},
