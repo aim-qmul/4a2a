@@ -1,0 +1,41 @@
+mode: forward
+epochs: 100
+ckpt_dir: test
+compressor:
+  inits:
+    threshold: -36
+    ratio: 4
+    attack_ms: 1
+    release_ms: 200
+    make_up_gain: 0
+  range:      # The ranges shouldn't be modified otherwise the eval.py will not work!
+    ratio:
+      min: 1
+      max: 20
+    attack_ms:
+      min: 0.1
+      max: 100
+    release_ms:
+      min: 10
+      max: 1000
+  init_ckpt: null
+  delay: 0
+
+optimiser:
+  hessian_module: autograd
+  hessian_mode: revrev
+  method: direct
+  alpha: 0.0001
+  beta: 0.5
+  max_iter: 20
+
+
+data:
+  duration: 12
+  overlap: 1
+  batch_size: -1
+  train:
+    input: /mnt/Data/Datasets/SignalTrain_LA2A_Dataset_1.1/Train/input_158_.wav
+    target: /mnt/Data/Datasets/SignalTrain_LA2A_Dataset_1.1/Train/target_158_LA2A_3c__0__100.wav
+    start: null
+    end: null
