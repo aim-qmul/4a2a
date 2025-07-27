@@ -131,15 +131,17 @@ It will create a directory `neutone_gru` containing the converted model files, w
 
 ## Comparison and Visualisation
 
-## Additional notes
-
+After rendering the audio files with the trained compressor and the baselines, you can run the [compare](compare.ipynb) notebook to compute the ESR and Loudness Dynamic Range difference ($\Delta$LDR) between the rendered audio files and the target audio files.
+It also plot Figure 6 in the paper.
+Pre-computed evaluation scores are available [here](evaluations/scores.csv). 
 ## Citation
 
 ```bibtex
 @inproceedings{ycy2024diffapf,
-  title={Differentiable All-pole Filters for Time-varying Audio Systems},
-  author={Chin-Yun Yu and Christopher Mitcheltree and Alistair Carson and Stefan Bilbao and Joshua D. Reiss and György Fazekas},
-  booktitle={International Conference on Digital Audio Effects (DAFx)},
-  year={2024}
+  title={Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method},
+  author={Chin-Yun Yu  and György Fazekas},
+  booktitle={AES International Conference on Artificial Intelligence and Machine Learning for Audio},
+  address={London, UK},
+  year={2025},
 }
 ```
