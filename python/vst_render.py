@@ -92,14 +92,12 @@ def main():
             plugin = load_plugin(
                 str(vst_path),
                 parameter_values={"gain": str(args.out_gain)},
-                # parameter_values={"gain": "17"}
             )
             set_mode_and_peak_reduction = uad_set_mode_and_peak_reduction
         case "ik":
             plugin = load_plugin(
                 str(vst_path),
                 parameter_values={
-                    # "gain": 50,
                     "gain": args.out_gain,
                 },
             )
@@ -108,7 +106,6 @@ def main():
             plugin = load_plugin(
                 str(vst_path),
                 parameter_values={
-                    # "gain": 0.35,
                     "gain": args.out_gain / 100,
                     "r37": 0,
                 },
