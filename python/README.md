@@ -138,7 +138,7 @@ Pre-computed evaluation scores are available [here](evaluations/scores.csv).
 ## Citation
 
 ```bibtex
-@inproceedings{ycy2024diffapf,
+@inproceedings{ycy2025Newtone,
   title={Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method},
   author={Chin-Yun Yu  and György Fazekas},
   booktitle={AES International Conference on Artificial Intelligence and Machine Learning for Audio},
