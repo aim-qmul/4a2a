@@ -34,14 +34,14 @@ For details, please refer to the [README](python/README.md) file in the director
 If you use this plugin in your research, please consider citing the following papers:
 
 ```bibtex
-@inproceedings{yu2024emulating,
+@inproceedings{ycy2024emulating,
   title={Emulating LA-2A Optical Compressor With a Feed-Forward Digital Compressor Using the Newton-Raphson Method},
   author={Chin-Yun Yu and György Fazekas},
   booktitle={Proceedings of the Digital Music Research Network Workshop},
   year={2024}
 }
 
-@inproceedings{ycy2025Newtone,
+@inproceedings{ycy2025newton,
   title={Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method},
   author={Chin-Yun Yu and György Fazekas},
   booktitle={AES International Conference on Artificial Intelligence and Machine Learning for Audio},
