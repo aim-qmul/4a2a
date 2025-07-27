@@ -131,9 +131,10 @@ It will create a directory `neutone_gru` containing the converted model files, w
 
 ## Comparison and Visualisation
 
-After rendering the audio files with the trained compressor and the baselines, you can run the [compare](compare.ipynb) notebook to compute the ESR and Loudness Dynamic Range difference ($\Delta$LDR) between the rendered audio files and the target audio files.
+After rendering the audio files with the trained compressor and the baselines, you can run the [compare](compare.ipynb) notebook to compute the ESR and Loudness Dynamic Range difference ($`\Delta`$LDR) between the rendered audio files and the target audio files.
 It also plot Figure 6 in the paper.
 Pre-computed evaluation scores are available [here](evaluations/scores.csv). 
+
 ## Citation
 
 ```bibtex
