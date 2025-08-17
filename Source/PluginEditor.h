@@ -36,7 +36,7 @@ private:
 	juce::AudioProcessorValueTreeState &valueTreeState;
 
 	std::unique_ptr<SliderAttachment> thresholdAttachment, ratioAttachment,
-		attackMsAttachment, releaseMsAttachment, makeUpAttachment;
+		attackMsAttachment, releaseMsAttachment, makeUpAttachment, peakReductionAttachment;
 	juce::Slider peakReduction, threshold, ratio, attackMs, releaseMs, makeUp;
 	juce::Label peakReductionLabel, thresholdLabel, ratioLabel, attackMsLabel,
 		releaseMsLabel, makeUpLabel;

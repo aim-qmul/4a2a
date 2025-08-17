@@ -35,7 +35,6 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 	modeSwitch.setButtonText("Compressor Mode");
 
 	peakReduction.setRange(40, 100);
-	peakReduction.setValue(40);
 
 	peakReduction.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 120,
 								  peakReduction.getTextBoxHeight());
@@ -119,6 +118,8 @@ _4A2AAudioProcessorEditor::_4A2AAudioProcessorEditor(
 		new SliderAttachment(valueTreeState, "makeUp", makeUp));
 	modeAttachment.reset(
 		new ButtonAttachment(valueTreeState, "mode", modeSwitch));
+	peakReductionAttachment.reset(
+		new SliderAttachment(valueTreeState, "peak", peakReduction));
 }
 
 _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
@@ -129,6 +130,7 @@ _4A2AAudioProcessorEditor::~_4A2AAudioProcessorEditor()
 	releaseMsAttachment.reset();
 	makeUpAttachment.reset();
 	modeAttachment.reset();
+	peakReductionAttachment.reset();
 }
 
 //==============================================================================
