@@ -36,6 +36,8 @@ _4A2AAudioProcessor::_4A2AAudioProcessor()
 		   std::make_unique<juce::AudioParameterFloat>(
 			   juce::ParameterID{"makeUp", 1}, "makeUp", -12.0f, 12.0f,
 			   0.0f),
+		   std::make_unique<juce::AudioParameterFloat>(
+			   juce::ParameterID{"peak", 1}, "peakReduction", 40.0f, 100.0f, 40.0f),
 		   std::make_unique<juce::AudioParameterBool>(
 			   juce::ParameterID{"mode", 1}, "limitMode", false)})
 {
@@ -133,7 +135,7 @@ bool _4A2AAudioProcessor::isBusesLayoutSupported(
 	if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono())
 		return false;
 
-		// This checks if the input layout matches the output layout
+	// This checks if the input layout matches the output layout
 #if !JucePlugin_IsSynth
 	if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
 		return false;
