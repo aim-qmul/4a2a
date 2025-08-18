@@ -3,7 +3,7 @@
 <JUCERPROJECT id="zNRukx" name="4A2A" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="C4DM"
               companyWebsite="www.c4dm.eecs.qmul.ac.uk" pluginVST3Category="Dynamics"
-              pluginAAXCategory="2">
+              pluginAAXCategory="2" version="1.1">
   <MAINGROUP id="dX3gNf" name="4A2A">
     <GROUP id="{D186E1B6-DAD5-0DAF-D98B-A6B245288D2E}" name="Source">
       <FILE id="ltQef7" name="PluginProcessor.cpp" compile="1" resource="0"
