@@ -2,7 +2,7 @@
 
 4A-2A is a VST plugin that emulates the LA-2A optical compressor using a feed-forward digital compressor.
 It was first presented as [Emulating LA-2A Optical Compressor With a Feed-Forward Digital Compressor Using the Newton-Raphson Method](media/DMRN_19__4A_2A.pdf) at DMRN+19.
-The finished work, [Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method](), was accepted at the AES International Conference on Artificial Intelligence and Machine Learning for Audio in London, UK.
+The finished work, [Sound Matching an Analogue Levelling Amplifier Using the Newton-Raphson Method](https://aes2.org/publications/elibrary-page/?id=22991), was accepted at the AES International Conference on Artificial Intelligence and Machine Learning for Audio in London, UK.
 
 We implement a mapping function $\mathbb{R} \to \mathbb{R}^5$ that maps the peak reduction of the LA-2A to the five parameters of the feed-forward compressor. The mapping function is learnt using the Newton-Raphson method on the [SignalTrain](https://doi.org/10.5281/zenodo.3824876) dataset.
 
